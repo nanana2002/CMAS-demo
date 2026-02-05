@@ -1,0 +1,43 @@
+services:
+  center:
+    build: ./center
+    container_name: center
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+
+  platform:
+    build: ./platform
+    container_name: platform
+    ports:
+      - "8081:80"
+    environment:
+      # 浏览器访问 platform 页面时，会用这个默认值请求 center
+      - CENTER_BASE_URL=http://localhost:8080
+
+  client:
+    build: ./client
+    container_name: client
+    ports:
+      - "8082:80"
+    environment:
+      - CENTER_BASE_URL=http://localhost:8080
+
+  site2-a:
+    build: ./site
+    container_name: site2-a
+    environment:
+      - PORT=9000
+      - INSTANCE_ID=site2-a
+    ports:
+      - "9001:9000"
+
+  site2-b:
+    build: ./site
+    container_name: site2-b
+    environment:
+      - PORT=9000
+      - INSTANCE_ID=site2-b
+    ports:
+      - "9002:9000"

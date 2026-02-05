@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Service Selection</title>
+  <link rel="stylesheet" href="./assets/app.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="./service-selection.html">service-selection</a>
+      <a href="./service-invocation.html">service-invocation</a>
+    </div>
+
+    <div class="h1">service-selection.html（服务卡片，点击进入 invocation）</div>
+
+    <div class="card">
+      <div class="row">
+        <button class="btn" id="btnRefresh">刷新</button>
+      </div>
+      <div id="cards" style="margin-top:12px;"></div>
+      <div id="err" class="err"></div>
+    </div>
+  </div>
+
+  <script src="./assets/client-api.js"></script>
+  <script src="./assets/ui.js"></script>
+</body>
+</html>

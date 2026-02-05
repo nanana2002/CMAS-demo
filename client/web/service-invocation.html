@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Service Invocation</title>
+  <link rel="stylesheet" href="./assets/app.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="./service-selection.html">service-selection</a>
+      <a href="./service-invocation.html">service-invocation</a>
+    </div>
+
+    <div class="h1">service-invocation.html（两段式 candidates→ping→allocate→invoke）</div>
+
+    <div class="card">
+      <div class="row">
+        <span class="badge">ServiceID:</span>
+        <span id="svcId" class="small"></span>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label>用户输入</label>
+        <textarea id="userInput" placeholder="输入对话内容"></textarea>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <button class="btn primary" id="btnSend">发送</button>
+        <button class="btn" id="btnEnd" disabled>结束/释放 Gas</button>
+        <span class="small" id="status"></span>
+      </div>
+
+      <div style="margin-top:12px;">
+        <label>模型回复</label>
+        <textarea id="modelOutput" readonly></textarea>
+      </div>
+
+      <div id="err" class="err"></div>
+    </div>
+  </div>
+
+  <script src="./assets/client-api.js"></script>
+  <script src="./assets/nma.js"></script>
+  <script src="./assets/ui.js"></script>
+</body>
+</html>

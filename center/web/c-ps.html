@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>C-PS</title>
+  <link rel="stylesheet" href="./assets/app.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="./service-deployment.html">service-deployment</a>
+      <a href="./site-table.html">site-table</a>
+      <a href="./c-ps.html">c-ps</a>
+    </div>
+
+    <div class="h1">c-ps.html（展示 table_cps_view）</div>
+
+    <div class="card">
+      <div class="row">
+        <button class="btn" id="btnRefreshCps">刷新</button>
+        <span class="small">Networkdelay 来自 client->site ping 的最近一次测量</span>
+      </div>
+
+      <div style="margin-top:12px; overflow:auto;">
+        <table id="tblCps">
+          <thead>
+            <tr>
+              <th>CS-ID</th><th>CSCI-ID</th><th>Gas</th><th>Cost</th><th>Computingtime</th><th>Networkdelay(ms)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div id="err" class="err"></div>
+    </div>
+  </div>
+
+  <script src="./assets/center-api.js"></script>
+  <script src="./assets/ui.js"></script>
+</body>
+</html>

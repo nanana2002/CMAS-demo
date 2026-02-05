@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Service Deployment</title>
+  <link rel="stylesheet" href="./assets/app.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="./service-deployment.html">service-deployment</a>
+      <a href="./site-table.html">site-table</a>
+      <a href="./c-ps.html">c-ps</a>
+    </div>
+
+    <div class="h1">service-deployment.html（注册站点部署 → table_deployments）</div>
+
+    <div class="card">
+      <div class="grid">
+        <div>
+          <label>SiteName</label>
+          <input id="SiteName"/>
+        </div>
+        <div>
+          <label>Service ID</label>
+          <input id="ServiceID"/>
+        </div>
+
+        <div>
+          <label>Gas</label>
+          <input id="Gas" type="number"/>
+        </div>
+        <div>
+          <label>Cost</label>
+          <input id="Cost" type="number"/>
+        </div>
+
+        <div style="grid-column:1 / -1">
+          <label>CSCI-ID (docker ip address, demo string)</label>
+          <input id="CSCI_ID"/>
+        </div>
+
+        <div style="grid-column:1 / -1">
+          <label>instances (JSON array) — 不在 site-table 显示，但用于 allocate</label>
+          <textarea id="Instances"></textarea>
+          <div class="small">示例：[{ "instanceId":"site2-a", "addr":"http://localhost:9001" },{ "instanceId":"site2-b", "addr":"http://localhost:9002" }]</div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn primary" id="btnRegister">注册</button>
+      </div>
+
+      <div id="err" class="err"></div>
+    </div>
+  </div>
+
+  <script src="./assets/center-api.js"></script>
+  <script src="./assets/ui.js"></script>
+</body>
+</html>

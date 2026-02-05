@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Service Register</title>
+  <link rel="stylesheet" href="./assets/app.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="./service-register.html">service-register</a>
+      <a href="./service-table.html">service-table</a>
+    </div>
+
+    <div class="h1">service-register.html（注册服务 → table_services）</div>
+
+    <div class="card">
+      <div class="grid">
+        <div>
+          <label>Service ID</label>
+          <input id="ServiceID" />
+        </div>
+        <div>
+          <label>Service Name</label>
+          <input id="ServiceName" />
+        </div>
+
+        <div>
+          <label>Input</label>
+          <input id="Input" />
+        </div>
+        <div>
+          <label>Computing Time</label>
+          <input id="ComputingTime" />
+        </div>
+
+        <div style="grid-column:1 / -1">
+          <label>Service Description</label>
+          <textarea id="ServiceDescription"></textarea>
+        </div>
+
+        <div style="grid-column:1 / -1">
+          <label>Service Runing Code</label>
+          <textarea id="ServiceRuningCode"></textarea>
+        </div>
+
+        <div>
+          <label>Computing Requirement</label>
+          <input id="ComputingRequirement" />
+        </div>
+        <div>
+          <label>Storage Requirement</label>
+          <input id="StorageRequirement" />
+        </div>
+
+        <div>
+          <label>Software Dependency</label>
+          <input id="SoftwareDependency" />
+        </div>
+        <div></div>
+
+        <div style="grid-column:1 / -1">
+          <label>Data Sample</label>
+          <textarea id="DataSample"></textarea>
+        </div>
+
+        <div style="grid-column:1 / -1">
+          <label>Result</label>
+          <textarea id="Result"></textarea>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn primary" id="btnRegister">注册</button>
+        <span class="small">注册后追加到 table_services（Center 存储）</span>
+      </div>
+
+      <div id="err" class="err"></div>
+    </div>
+  </div>
+
+  <script src="./assets/platform-api.js"></script>
+  <script src="./assets/ui.js"></script>
+</body>
+</html>

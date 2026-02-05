@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Service Table</title>
+  <link rel="stylesheet" href="./assets/app.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="./service-register.html">service-register</a>
+      <a href="./service-table.html">service-table</a>
+    </div>
+
+    <div class="h1">service-table.html（查看/删除 table_services）</div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between;">
+        <button class="btn" id="btnRefresh">刷新</button>
+        <span class="small">删除会级联删除 Center 侧该 ServiceID 的 deployments</span>
+      </div>
+
+      <div style="margin-top:12px; overflow:auto;">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th>ServiceID</th><th>ServiceName</th><th>Input</th><th>ServiceDescription</th>
+              <th>ComputingTime</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div id="err" class="err"></div>
+    </div>
+  </div>
+
+  <script src="./assets/platform-api.js"></script>
+  <script src="./assets/ui.js"></script>
+</body>
+</html>

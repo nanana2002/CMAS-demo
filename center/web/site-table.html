@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Site Table</title>
+  <link rel="stylesheet" href="./assets/app.css"/>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="./service-deployment.html">service-deployment</a>
+      <a href="./site-table.html">site-table</a>
+      <a href="./c-ps.html">c-ps</a>
+    </div>
+
+    <div class="h1">site-table.html（查看/删除 table_deployments；不显示 instances）</div>
+
+    <div class="card">
+      <div class="row">
+        <button class="btn" id="btnRefreshDeploy">刷新</button>
+      </div>
+
+      <div style="margin-top:12px; overflow:auto;">
+        <table id="tblDeploy">
+          <thead>
+            <tr>
+              <th>SiteName</th><th>ServiceID</th><th>Gas</th><th>Cost</th><th>CSCI-ID</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div id="err" class="err"></div>
+    </div>
+  </div>
+
+  <script src="./assets/center-api.js"></script>
+  <script src="./assets/ui.js"></script>
+</body>
+</html>
