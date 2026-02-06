@@ -36,12 +36,15 @@ async function apiRelease(allocationId){
   return r.json();
 }
 
-async function siteInvoke(addr, serviceId, input){
-  const r = await fetch(`${addr}/invoke`,{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ServiceID: serviceId, Input: input}),
+async function siteInvoke(addrPrefix, serviceId, input){
+  const model = (serviceId === "LLM1") ? "qwen2.5:0.5b" : "qwen2.5:0.5b";
+
+  const r = await fetch(`${addrPrefix}/ollama/api/generate`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ model, prompt: input, stream: false }),
   });
   if(!r.ok) throw new Error(await r.text());
-  return r.json();
+  return r.json(); // { response: "...", ... }
 }
+

@@ -95,10 +95,11 @@ async function initInvocation(){
 
       // 4) invoke
       setStatus(`invoke ${currentChosenAddr}...`);
-      const resp = await siteInvoke(currentChosenAddr, serviceId, userText);
+      const data = await siteInvoke(alloc.addr, svcId, userInput.value);
+      $("modelOutput").value = data.response || "";
 
-      $("modelOutput").value = resp.Output || JSON.stringify(resp, null, 2);
-      setStatus(`done (instance=${resp.InstanceID || ""})`);
+
+      setStatus(`done (instance=${data.InstanceID || ""})`);
     }catch(e){
       setErr(String(e));
       setStatus("");

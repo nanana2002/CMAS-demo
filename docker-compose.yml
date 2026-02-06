@@ -6,6 +6,10 @@ services:
       - "8080:8080"
     environment:
       - PORT=8080
+      - STORE_PATH=/data/store.json
+    volumes:
+      - center_data:/data
+
 
   platform:
     build: ./platform
@@ -23,21 +27,43 @@ services:
       - "8082:80"
     environment:
       - CENTER_BASE_URL=http://localhost:8080
+    depends_on:
+      - site2-a-gw
+      - site2-b-gw
 
-  site2-a:
-    build: ./site
-    container_name: site2-a
-    environment:
-      - PORT=9000
-      - INSTANCE_ID=site2-a
-    ports:
-      - "9001:9000"
+  #site2-a:
+  #  build: ./site
+  #  container_name: site2-a
+  #  environment:
+  #    - PORT=9000
+  #    - INSTANCE_ID=site2-a
+  #  ports:
+  #    - "9001:9000"
 
-  site2-b:
-    build: ./site
-    container_name: site2-b
-    environment:
-      - PORT=9000
-      - INSTANCE_ID=site2-b
+  #site2-b:
+  #  build: ./site
+  #  container_name: site2-b
+  #  environment:
+  #    - PORT=9000
+  #    - INSTANCE_ID=site2-b
+  #  ports:
+  #    - "9002:9000"
+
+  site2-a-gw:
+    build: ./site-gateway
+    container_name: site2-a-gw
     ports:
-      - "9002:9000"
+      - "9001:80"
+    environment:
+      - OLLAMA_UPSTREAM=http://192.168.235.48:11436
+
+  site2-b-gw:
+    build: ./site-gateway
+    container_name: site2-b-gw
+    ports:
+      - "9002:80"
+    environment:
+      - OLLAMA_UPSTREAM=http://192.168.235.48:11437
+
+volumes:
+  center_data: {}

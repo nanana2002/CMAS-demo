@@ -1,0 +1,30 @@
+server {
+  listen 80;
+
+  # 轻量探针：测到达站点入口的 RTT（无上游依赖）
+  location = /ping { return 200; }
+
+  # 站点入口统一反代到本实例对应的 Ollama
+  location /ollama/ {
+    # CORS（gateway 层统一处理）
+    add_header Access-Control-Allow-Origin "*" always;
+    add_header Access-Control-Allow-Methods "GET,POST,PUT,PATCH,DELETE,OPTIONS" always;
+    add_header Access-Control-Allow-Headers "Content-Type, Authorization" always;
+    add_header Access-Control-Max-Age 86400 always;
+
+    if ($request_method = OPTIONS) { return 204; }
+
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+
+    # 关键：不要把浏览器的 Origin 传给 Ollama（否则 403）
+    proxy_set_header Origin "";
+
+    # Host 用上游域名/地址，别用浏览器的 host
+    proxy_set_header Host $proxy_host;
+
+    rewrite ^/ollama/(.*)$ /$1 break;
+    proxy_pass ${OLLAMA_UPSTREAM};
+  }
+
+}
