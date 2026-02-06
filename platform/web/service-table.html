@@ -5,6 +5,54 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Service Table</title>
   <link rel="stylesheet" href="./assets/app.css"/>
+  <style>
+    /* 表格总体：允许横向滚动但别把表头压成竖排 */
+    #tbl{
+      table-layout: auto;     /* 覆盖可能的 fixed */
+      width: max-content;     /* 让表格按内容撑开 */
+      min-width: 100%;
+    }
+
+    /* 表头：按词/空格换行，不按字母拆 */
+    #tbl th{
+      white-space: normal;
+      word-break: normal;
+      overflow-wrap: normal;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 1.2;
+      padding: 10px 12px;
+    }
+
+    /* 内容：可以换行，不省略 */
+    #tbl td{
+      white-space: pre-wrap;
+      word-break: break-word;
+      vertical-align: top;
+      padding: 10px 12px;
+    }
+
+    /* 每列最小宽度（按你这个页面的字段特性） */
+    #tbl th:nth-child(1), #tbl td:nth-child(1){ min-width: 110px; } /* ServiceID */
+    #tbl th:nth-child(2), #tbl td:nth-child(2){ min-width: 160px; } /* ServiceName */
+    #tbl th:nth-child(3), #tbl td:nth-child(3){ min-width: 140px; } /* Input */
+    #tbl th:nth-child(4), #tbl td:nth-child(4){ min-width: 260px; } /* ServiceDescription */
+    #tbl th:nth-child(5), #tbl td:nth-child(5){ min-width: 260px; } /* ServiceRuningCode */
+    #tbl th:nth-child(6), #tbl td:nth-child(6){ min-width: 170px; } /* ComputingRequirement */
+    #tbl th:nth-child(7), #tbl td:nth-child(7){ min-width: 170px; } /* StorageRequirement */
+    #tbl th:nth-child(8), #tbl td:nth-child(8){ min-width: 140px; } /* ComputingTime */
+    #tbl th:nth-child(9), #tbl td:nth-child(9){ min-width: 180px; } /* SoftwareDependency */
+    #tbl th:nth-child(10),#tbl td:nth-child(10){ min-width: 90px;  } /* Action */
+
+    /* Network log box */
+    #networkLog{
+      margin-top: 8px; padding:10px; border:1px solid rgba(0,0,0,.12);
+      border-radius:8px; background:rgba(0,0,0,.03); height:200px; overflow:auto;
+      white-space:pre-wrap; word-break:break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:12px; line-height:1.35;
+    }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -25,8 +73,16 @@
         <table id="tbl">
           <thead>
             <tr>
-              <th>ServiceID</th><th>ServiceName</th><th>Input</th><th>ServiceDescription</th>
-              <th>ComputingTime</th><th>Action</th>
+              <th>Service<br>ID</th>
+              <th>Service<br>Name</th>
+              <th>Input</th>
+              <th>Service<br>Description</th>
+              <th>Service<br>Runing Code</th>
+              <th>Computing<br>Requirement</th>
+              <th>Storage<br>Requirement</th>
+              <th>Computing<br>Time</th>
+              <th>Software<br>Dependency</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -34,6 +90,11 @@
       </div>
 
       <div id="err" class="err"></div>
+
+      <div style="margin-top:14px;">
+        <div class="small" style="font-weight:700;">Network Log</div>
+        <div id="networkLog"></div>
+      </div>
     </div>
   </div>
 

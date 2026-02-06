@@ -6,16 +6,53 @@ function escapeHtml(s){
 }
 function escapeAttr(s){ return escapeHtml(s); }
 
+// -------- Network Log (center) --------
+function installNetworkLog(containerName){
+  const box = $("networkLog");
+  if(!box) return;
+
+  function ts(){
+    const d = new Date();
+    const p2 = (n)=>String(n).padStart(2,'0');
+    return `${p2(d.getHours())}:${p2(d.getMinutes())}:${p2(d.getSeconds())}.${String(d.getMilliseconds()).padStart(3,'0')}`;
+  }
+  function line(s){
+    box.textContent += `[${ts()}] [${containerName}] ${s}\n`;
+    box.scrollTop = box.scrollHeight;
+  }
+
+  const _fetch = window.fetch.bind(window);
+  window.fetch = async function(input, init){
+    const method = (init && init.method) ? init.method.toUpperCase() : 'GET';
+    const url = (typeof input === 'string') ? input : (input && input.url) ? input.url : String(input);
+    const t0 = performance.now();
+    try{
+      line(`→ ${method} ${url}`);
+      const res = await _fetch(input, init);
+      const t1 = performance.now();
+      line(`← ${method} ${url}  ${res.status}  ${(t1 - t0).toFixed(1)}ms`);
+      return res;
+    }catch(e){
+      const t1 = performance.now();
+      line(`× ${method} ${url}  ERR  ${(t1 - t0).toFixed(1)}ms  ${e && e.message ? e.message : e}`);
+      throw e;
+    }
+  };
+
+  line("Network Log ready.");
+}
+// --------------------------------------
+
 function defaultDeployment(){
   return {
     SiteName: "site2",
     ServiceID: "LLM1",
     Gas: 2,
     Cost: 4,
-    "CSCI-ID": "127.0.0.1-127.0.0.2",
+    "CSCI-ID": "site2-a|site2-b",
     instances: [
-      { instanceId: "site2-a", addr: "http://localhost:9001" },
-      { instanceId: "site2-b", addr: "http://localhost:9002" },
+      { instanceId: "site2-a", addr: "/site2-a" },
+      { instanceId: "site2-b", addr: "/site2-b" },
     ],
   };
 }
@@ -127,7 +164,8 @@ function initCpsPage(){
   renderCps();
 }
 
-
+// init
+installNetworkLog("center");
 initDeploymentPage();
 initSiteTablePage();
 initCpsPage();

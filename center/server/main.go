@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
+	"fmt"
 )
 
 // 全局 store：供所有 handler 使用
@@ -34,11 +36,14 @@ func main() {
 	mux.HandleFunc("/api/deployments", withCORS(deploymentsHandler))
 	mux.HandleFunc("/api/deployments/", withCORS(deploymentDeleteHandler))
 
-	// cps 相关 handler 只做转发：逻辑在 store.Candidates/Allocate/Release
+	// cps 相关 handler：逻辑在 store.Candidates/Allocate/Release
 	mux.HandleFunc("/api/cps/candidates", withCORS(candidatesHandler))
 	mux.HandleFunc("/api/cps/allocate", withCORS(allocateHandler))
 	mux.HandleFunc("/api/allocations/release", withCORS(releaseHandler))
 	mux.HandleFunc("/api/cps/view", withCORS(cpsViewHandler))
+
+	// 新增：点击卡片先发一条消息（demo 真实性）
+	mux.HandleFunc("/api/client/selection", withCORS(clientSelectionHandler))
 
 	addr := ":" + port
 	log.Printf("center listening on %s", addr)
@@ -89,7 +94,7 @@ func servicesHandler(w http.ResponseWriter, r *http.Request) {
 		store.services[s.ServiceID] = s
 		store.mu.Unlock()
 
-		// 持久化（你要求“我要持久化”）
+		// 持久化
 		_ = store.SaveToDisk()
 
 		writeJSON(w, map[string]any{"ok": true})
@@ -317,8 +322,10 @@ func cpsViewHandler(w http.ResponseWriter, r *http.Request) {
 	defer store.mu.Unlock()
 
 	var rows []CPSViewRow
+
 	for _, bySvc := range store.deployments {
 		for _, st := range bySvc {
+
 			comp := ""
 			if svc, ok := store.services[st.Deployment.ServiceID]; ok {
 				comp = svc.ComputingTime
@@ -339,7 +346,7 @@ func cpsViewHandler(w http.ResponseWriter, r *http.Request) {
 			rows = append(rows, CPSViewRow{
 				CS_ID:         st.Deployment.ServiceID,
 				CSCI_ID:       st.Deployment.CSCI_ID,
-				Gas:           st.Deployment.Gas,
+				Gas:           fmt.Sprintf("%d/%d", st.GasAvailable, st.Deployment.Gas), // ★ 核心修改
 				Cost:          st.Deployment.Cost,
 				Computingtime: comp,
 				Networkdelay:  minDelay,
@@ -348,4 +355,59 @@ func cpsViewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, map[string]any{"cps": rows})
+}
+
+// -------- client selection (NEW) --------
+func clientSelectionHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "POST only", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req ClientSelectionRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "bad json", http.StatusBadRequest)
+		return
+	}
+
+	req.ServiceID = strings.TrimSpace(req.ServiceID)
+	req.CostPref = strings.TrimSpace(req.CostPref)
+	req.DelayPref = strings.TrimSpace(req.DelayPref)
+
+	if req.ServiceID == "" {
+		http.Error(w, "missing ServiceID", http.StatusBadRequest)
+		return
+	}
+	if req.Gas <= 0 {
+		// 你要求 demo 里发 Gas=1；这里允许 >=1
+		req.Gas = 1
+	}
+	if req.SelectedAt == "" {
+		req.SelectedAt = time.Now().Format(time.RFC3339Nano)
+	}
+
+	// 追加写入 /data/client-selections.log（容器挂载 /data 可持久化）
+	if err := appendJSONLine("/data/client-selections.log", req); err != nil {
+		// 不因为写盘失败阻断 demo
+		log.Printf("append selection log failed: %v", err)
+	}
+
+	log.Printf("client selection: ServiceID=%s Gas=%d CostPref=%s DelayPref=%s",
+		req.ServiceID, req.Gas, req.CostPref, req.DelayPref)
+
+	writeJSON(w, map[string]any{"ok": true})
+}
+
+func appendJSONLine(path string, v any) error {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return err
+	}
+	f, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0o644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	_, err = f.Write(append(b, '\n'))
+	return err
 }

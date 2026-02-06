@@ -5,16 +5,25 @@ import (
 	"sort"
 )
 
-const (
-	wDelay = 0.6
-	wCost  = 0.4
-)
-
 type scored struct {
 	m     Measurement
 	cost  int
 	cscid string
 	score float64
+}
+
+// 权重规则：
+// cost=most & delay=least -> 0.7 / 0.3
+// cost=least & delay=most -> 0.3 / 0.7
+// 其它组合（most/most、least/least、空值等）-> 0.5 / 0.5
+func weights(costPref, delayPref string) (wCost, wDelay float64) {
+	if costPref == "most" && delayPref == "least" {
+		return 0.7, 0.3
+	}
+	if costPref == "least" && delayPref == "most" {
+		return 0.3, 0.7
+	}
+	return 0.5, 0.5
 }
 
 func (s *Store) Candidates(serviceID string) []Candidate {
@@ -46,8 +55,8 @@ func (s *Store) Allocate(req AllocateRequest) (AllocateResponse, error) {
 	if req.ServiceID == "" {
 		return AllocateResponse{}, errors.New("missing ServiceID")
 	}
-	
-		// 兜底：如果前端没传 measurements，就用该 service 的所有 instances 生成测量（delay=0）
+
+	// 兜底：如果前端没传 measurements，就用该 service 的所有 instances 生成测量（delay=0）
 	if len(req.Measurements) == 0 {
 		for siteName, bySvc := range s.deployments {
 			st, ok := bySvc[req.ServiceID]
@@ -56,14 +65,17 @@ func (s *Store) Allocate(req AllocateRequest) (AllocateResponse, error) {
 			}
 			for _, inst := range st.Deployment.Instances {
 				req.Measurements = append(req.Measurements, Measurement{
-					SiteName:    siteName,
-					InstanceID:  inst.InstanceID,
-					Addr:        inst.Addr,
-					DelayMs:     0,
+					SiteName:   siteName,
+					InstanceID: inst.InstanceID,
+					Addr:       inst.Addr,
+					DelayMs:    0,
 				})
 			}
 		}
 	}
+
+	// 计算动态权重
+	wCost, wDelay := weights(req.CostPref, req.DelayPref)
 
 	// 建索引：instanceId -> (siteName, addr, cost, cscid, state)
 	type instInfo struct {

@@ -7,13 +7,9 @@ function joinPath(a, b) {
 }
 
 function buildPingUrl(addr) {
-  // addr can be:
-  // 1) "/site2-a"  (recommended; same-origin via client nginx)
-  // 2) "http://host:port/site2-a"
-  // 3) "http://host:port" (rare)
   if (!addr) throw new Error("missing addr");
 
-  // If addr is relative, force same-origin
+  // relative -> same origin
   if (addr.startsWith("/")) {
     return joinPath(window.location.origin, joinPath(addr, "ping"));
   }
@@ -35,8 +31,9 @@ async function pingOnce(addr, timeoutMs = 2000) {
       cache: "no-store",
       signal: ctrl.signal,
     });
+
     if (!resp.ok) throw new Error(`ping ${url} -> HTTP ${resp.status}`);
-    // IMPORTANT: /ping has empty body, no resp.json()/resp.text()
+
     const t1 = performance.now();
     return Math.max(0, Math.round(t1 - t0));
   } finally {
@@ -44,28 +41,31 @@ async function pingOnce(addr, timeoutMs = 2000) {
   }
 }
 
-// cands: [{SiteName, instances:[{instanceId, addr}, ...]}] OR flat instances
+// cands: [{SiteName, instances:[{instanceId, addr}, ...]}]
 async function measureDelays(cands) {
   const out = [];
 
   for (const c of (cands || [])) {
-    const siteName = c.SiteName || c.siteName || c.site || "";
-    const insts = c.instances || c.Instances || c || [];
+    const SiteName = c.SiteName || c.siteName || "";
+
+    const insts = c.instances || c.Instances || [];
     if (!Array.isArray(insts)) continue;
 
     for (const inst of insts) {
       const instanceId = inst.instanceId || inst.InstanceID || inst.InstanceId;
       const addr = inst.addr || inst.Addr;
+
       const delayMs = await pingOnce(addr);
 
       out.push({
-        siteName,
+        SiteName,          // ← 修正：大写，和后端 struct 完全一致
         instanceId,
-        addr,       // keep as-is ("/site2-a" etc)
+        addr,
         delayMs,
       });
     }
   }
+
   return out;
 }
 

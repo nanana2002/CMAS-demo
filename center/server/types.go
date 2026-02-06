@@ -10,8 +10,6 @@ type Service struct {
 	StorageRequirement   string `json:"StorageRequirement"`
 	ComputingTime        string `json:"ComputingTime"`
 	SoftwareDependency   string `json:"SoftwareDependency"`
-	DataSample           string `json:"DataSample"`
-	Result               string `json:"Result"`
 }
 
 type Instance struct {
@@ -22,7 +20,7 @@ type Instance struct {
 type Deployment struct {
 	SiteName  string `json:"SiteName"`
 	ServiceID string `json:"ServiceID"`
-	Gas       int    `json:"Gas"`
+	Gas       int    `json:"Gas"` // 总量
 	Cost      int    `json:"Cost"`
 	CSCI_ID   string `json:"CSCI-ID"`
 
@@ -36,7 +34,7 @@ type CandidatesRequest struct {
 type Candidate struct {
 	SiteName  string     `json:"SiteName"`
 	ServiceID string     `json:"ServiceID"`
-	Gas       int        `json:"Gas"` // 只暴露总Gas
+	Gas       int        `json:"Gas"`
 	Cost      int        `json:"Cost"`
 	CSCI_ID   string     `json:"CSCI-ID"`
 	Instances []Instance `json:"instances"`
@@ -56,6 +54,8 @@ type Measurement struct {
 type AllocateRequest struct {
 	ServiceID    string        `json:"ServiceID"`
 	Measurements []Measurement `json:"measurements"`
+	CostPref     string        `json:"CostPref"`
+	DelayPref    string        `json:"DelayPref"`
 }
 
 type AllocateResponse struct {
@@ -72,11 +72,28 @@ type ReleaseRequest struct {
 	AllocationID string `json:"allocationId"`
 }
 
+/*
+关键修改：
+Gas 从 int -> string
+用于显示  available/total
+*/
 type CPSViewRow struct {
 	CS_ID         string `json:"CS-ID"`
 	CSCI_ID       string `json:"CSCI-ID"`
-	Gas           int    `json:"Gas"`
+	Gas           string `json:"Gas"`
 	Cost          int    `json:"Cost"`
 	Computingtime string `json:"Computingtime"`
 	Networkdelay  int    `json:"Networkdelay"`
+}
+
+type ClientSelectionRequest struct {
+	ServiceID   string `json:"ServiceID"`
+	Gas         int    `json:"Gas"`
+	CostPref    string `json:"CostPref"`
+	DelayPref   string `json:"DelayPref"`
+	SelectedAt  string `json:"SelectedAt"`
+}
+
+type ClientSelectionResponse struct {
+	Ok bool `json:"ok"`
 }

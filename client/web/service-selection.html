@@ -5,6 +5,43 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Service Selection</title>
   <link rel="stylesheet" href="./assets/app.css"/>
+  <style>
+    /* Network Log（由 ./assets/ui.js 统一 patch fetch 写入） */
+    #networkLog{
+      margin-top: 14px;
+      padding: 10px;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 8px;
+      background: rgba(0,0,0,.03);
+      height: 200px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .prefs{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-end;
+      margin-top:10px;
+    }
+    .prefs .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      min-width: 160px;
+    }
+    .prefs select{
+      padding:8px 10px;
+      border: 1px solid rgba(0,0,0,.15);
+      border-radius: 8px;
+      background:#fff;
+    }
+    .netlog-title{ margin-top: 16px; font-weight: 700; }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -16,11 +53,34 @@
     <div class="h1">service-selection.html（服务卡片，点击进入 invocation）</div>
 
     <div class="card">
-      <div class="row">
+      <div class="row" style="justify-content:space-between;">
         <button class="btn" id="btnRefresh">刷新</button>
+        <span class="small">选择偏好会影响 allocate 的 cost/delay 权重</span>
       </div>
+
+      <!-- 偏好选择框 -->
+      <div class="prefs">
+        <div class="field">
+          <label class="small">Cost Preference</label>
+          <select id="prefCost">
+            <option value="most">most</option>
+            <option value="least">least</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="small">Delay Preference</label>
+          <select id="prefDelay">
+            <option value="least">least</option>
+            <option value="most">most</option>
+          </select>
+        </div>
+      </div>
+
       <div id="cards" style="margin-top:12px;"></div>
       <div id="err" class="err"></div>
+
+      <div class="netlog-title">Network Log</div>
+      <div id="networkLog"></div>
     </div>
   </div>
 

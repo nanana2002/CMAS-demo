@@ -9,7 +9,7 @@ async function apiGetServices() {
 async function apiCreateService(svc) {
   const r = await fetch(`${CENTER_BASE}/api/services`, {
     method: "POST",
-    headers: {"Content-Type":"application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(svc),
   });
   if (!r.ok) throw new Error(await r.text());

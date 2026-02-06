@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Service Deployment</title>
   <link rel="stylesheet" href="./assets/app.css"/>
+  <style>
+    #networkLog{
+      margin-top: 14px;
+      padding: 10px;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 8px;
+      background: rgba(0,0,0,.03);
+      height: 220px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .netlog-title{ margin-top: 16px; font-weight: 700; }
+  </style>
 </head>
 <body>
   <div class="wrap">
@@ -20,31 +37,35 @@
       <div class="grid">
         <div>
           <label>SiteName</label>
-          <input id="SiteName"/>
+          <input id="SiteName" value="site2"/>
         </div>
         <div>
           <label>Service ID</label>
-          <input id="ServiceID"/>
+          <input id="ServiceID" value="LLM1"/>
         </div>
 
         <div>
           <label>Gas</label>
-          <input id="Gas" type="number"/>
+          <input id="Gas" type="number" value="2"/>
         </div>
         <div>
           <label>Cost</label>
-          <input id="Cost" type="number"/>
+          <input id="Cost" type="number" value="4"/>
         </div>
 
         <div style="grid-column:1 / -1">
           <label>CSCI-ID (docker ip address, demo string)</label>
-          <input id="CSCI_ID"/>
+          <input id="CSCI_ID" value="site2-a|site2-b"/>
+          <div class="small">默认：site2-a|site2-b（center 可据此自动生成 instances；也可手填 instances 覆盖）</div>
         </div>
 
         <div style="grid-column:1 / -1">
           <label>instances (JSON array) — 不在 site-table 显示，但用于 allocate</label>
-          <textarea id="Instances"></textarea>
-          <div class="small">示例：[{ "instanceId":"site2-a", "addr":"http://localhost:9001" },{ "instanceId":"site2-b", "addr":"http://localhost:9002" }]</div>
+          <textarea id="Instances">[
+  {"instanceId":"site2-a","addr":"/site2-a"},
+  {"instanceId":"site2-b","addr":"/site2-b"}
+]</textarea>
+          <div class="small">示例同上（相对路径，保证浏览器同源走 client nginx 反代）</div>
         </div>
       </div>
 
@@ -53,10 +74,13 @@
       </div>
 
       <div id="err" class="err"></div>
+
+      <div class="netlog-title">Network Log</div>
+      <div id="networkLog"></div>
     </div>
   </div>
 
   <script src="./assets/center-api.js"></script>
-  <script src="./assets/ui.js"></script>
+  <script src="./assets/ui.js?v=20260206_2"></script>
 </body>
 </html>
