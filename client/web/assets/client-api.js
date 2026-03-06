@@ -77,8 +77,8 @@ async function siteInvoke(addrPrefix, serviceId, input){
         model, 
         prompt: input, 
         stream: false,
-        max_tokens: 50,  // 核心：限制最大生成100个令牌（可根据需求调整，如50/200）
-        temperature: 0.1  // 降低随机性，回答更简洁
+        max_tokens: 10,  // 核心：限制最大生成100个令牌（可根据需求调整，如50/200）
+        temperature: 0.5  // 降低随机性，回答更简洁
       }),
     });
     
