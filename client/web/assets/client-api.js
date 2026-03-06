@@ -61,13 +61,35 @@ async function apiRelease(allocationId){
 }
 
 async function siteInvoke(addrPrefix, serviceId, input){
-  const model = (serviceId === "LLM1") ? "qwen2.5:0.5b" : "qwen2.5:0.5b";
+  const model = "qwen3-vl:2b";
 
-  const r = await fetch(`${addrPrefix}/ollama/api/generate`, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ model, prompt: input, stream: false }),
-  });
-  if(!r.ok) throw new Error(await r.text());
-  return r.json(); // { response: "...", ... }
+  // 终极兜底：清洗地址
+  let cleanAddr = addrPrefix.replace(/\/ollama/g, "");
+  cleanAddr = cleanAddr.replace(/\/+$/, "");
+  if (!cleanAddr.startsWith("/")) cleanAddr = "/" + cleanAddr;
+  const finalUrl = `${cleanAddr}/api/generate`;
+
+  try {
+    const r = await fetch(finalUrl, {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ 
+        model, 
+        prompt: input, 
+        stream: false,
+        max_tokens: 50,  // 核心：限制最大生成100个令牌（可根据需求调整，如50/200）
+        temperature: 0.1  // 降低随机性，回答更简洁
+      }),
+    });
+    
+    if(!r.ok) {
+      const errorText = await r.text();
+      throw new Error(`请求失败 [${r.status}]: ${errorText}`);
+    }
+    
+    return r.json();
+  } catch (err) {
+    console.error(`调用网关失败 (原始地址: ${addrPrefix}, 清洗后: ${cleanAddr}):`, err.message);
+    throw err;
+  }
 }

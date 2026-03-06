@@ -9,7 +9,8 @@ services:
       - STORE_PATH=/data/store.json
     volumes:
       - center_data:/data
-
+    networks:
+      - cmas-network
 
   platform:
     build: ./platform
@@ -19,6 +20,8 @@ services:
     environment:
       # 浏览器访问 platform 页面时，会用这个默认值请求 center
       - CENTER_BASE_URL=http://localhost:8080
+    networks:
+      - cmas-network
 
   client:
     build: ./client
@@ -30,6 +33,10 @@ services:
     depends_on:
       - site2-a-gw
       - site2-b-gw
+      - site1-gw
+    networks:
+      - cmas-network
+    restart: always
 
   #site2-a:
   #  build: ./site
@@ -49,13 +56,58 @@ services:
   #  ports:
   #    - "9002:9000"
 
+  #site1:
+  #  build: ./site
+  #  container_name: site1
+  #  environment:
+  #    - PORT=9000
+  #    - INSTANCE_ID=site1
+  #  ports:
+  #    - "9003:9000"
+
+  # Ollama 模型服务（核心）
+  ollama-model:
+    image: ollama/ollama:latest
+    container_name: ollama-model
+    ports:
+      - "11434:11434"
+    volumes:
+      - /data/ollama-model:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_MODEL=qwen3-vl:2b
+      # 新增：允许所有跨域请求（解决403核心）
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_ALLOW_CORS=1
+    restart: always
+    networks:
+      - cmas-network
+
+  site1-gw:
+    build: ./site-gateway
+    container_name: site1-gw
+    ports:
+      - "9003:80"
+    environment:
+      - OLLAMA_UPSTREAM=http://ollama-model:11434
+    depends_on:
+      - ollama-model
+    networks:
+      - cmas-network
+    restart: always
+
   site2-a-gw:
     build: ./site-gateway
     container_name: site2-a-gw
     ports:
       - "9001:80"
     environment:
-      - OLLAMA_UPSTREAM=http://192.168.235.48:11436
+      - OLLAMA_UPSTREAM=http://ollama-model:11434
+    depends_on:
+      - ollama-model
+    networks:
+      - cmas-network
+    restart: always
 
   site2-b-gw:
     build: ./site-gateway
@@ -63,7 +115,17 @@ services:
     ports:
       - "9002:80"
     environment:
-      - OLLAMA_UPSTREAM=http://192.168.235.48:11437
+      - OLLAMA_UPSTREAM=http://ollama-model:11434
+    depends_on:
+      - ollama-model
+    networks:
+      - cmas-network
+    restart: always
 
 volumes:
   center_data: {}
+
+# 统一网络，确保所有容器互通
+networks:
+  cmas-network:
+    driver: bridge
