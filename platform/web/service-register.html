@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Service Register</title>
+  <link rel="stylesheet" href="./assets/app.css"/>
+  <style>
+    /* Network Log：底部滚动区（fetch 日志由 ./assets/ui.js 统一注入） */
+    #networkLog{
+      margin-top: 14px;
+      padding: 10px;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 8px;
+      background: rgba(0,0,0,.03);
+      height: 200px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .netlog-title{ margin-top: 18px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="./service-register.html">service-register</a>
+      <a href="./service-table.html">service-table</a>
+    </div>
+
+    <div class="h1">service-register.html</div>
+
+    <div class="card">
+      <div class="grid">
+        <div>
+          <label>Service ID</label>
+          <input id="ServiceID" />
+        </div>
+        <div>
+          <label>Service Name</label>
+          <input id="ServiceName" />
+        </div>
+
+        <div>
+          <label>Input</label>
+          <input id="Input" />
+        </div>
+        <div>
+          <label>Computing Time</label>
+          <input id="ComputingTime" />
+        </div>
+
+        <div style="grid-column:1 / -1">
+          <label>Service Description</label>
+          <textarea id="ServiceDescription"></textarea>
+        </div>
+
+        <div style="grid-column:1 / -1">
+          <label>Service Runing Code</label>
+          <textarea id="ServiceRuningCode"></textarea>
+        </div>
+
+        <div>
+          <label>Computing Requirement</label>
+          <input id="ComputingRequirement" />
+        </div>
+        <div>
+          <label>Storage Requirement</label>
+          <input id="StorageRequirement" />
+        </div>
+
+        <div>
+          <label>Software Dependency</label>
+          <input id="SoftwareDependency" />
+        </div>
+        <div></div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn primary" id="btnRegister">Register</button>
+      </div>
+
+      <div id="err" class="err"></div>
+
+      <div class="netlog-title">Network Log</div>
+      <div id="networkLog"></div>
+    </div>
+  </div>
+
+  <script src="./assets/platform-api.js"></script>
+  <script src="./assets/ui.js"></script>
+</body>
+</html>

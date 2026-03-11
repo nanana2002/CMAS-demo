@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Service Deployment</title>
+  <link rel="stylesheet" href="./assets/app.css"/>
+  <style>
+    #networkLog{
+      margin-top: 14px;
+      padding: 10px;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 8px;
+      background: rgba(0,0,0,.03);
+      height: 220px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .netlog-title{ margin-top: 16px; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="./service-deployment.html">service-deployment</a>
+      <a href="./site-table.html">site-table</a>
+      <a href="./c-ps.html">c-ps</a>
+    </div>
+
+    <div class="h1">service-deployment.html</div>
+
+    <div class="card">
+      <div class="grid">
+        <div>
+          <label>SiteName</label>
+          <input id="SiteName" value="site2"/>
+        </div>
+        <div>
+          <label>Service ID</label>
+          <input id="ServiceID" value="LLM1"/>
+        </div>
+
+        <div>
+          <label>Gas</label>
+          <input id="Gas" type="number" value="2"/>
+        </div>
+        <div>
+          <label>Cost</label>
+          <input id="Cost" type="number" value="4"/>
+        </div>
+
+        <div style="grid-column:1 / -1">
+          <label>CSCI-ID (docker ip address, demo string)</label>
+          <input id="CSCI_ID" value="site2-a|site2-b"/>
+        </div>
+
+        <div style="grid-column:1 / -1">
+          <label>instances (JSON array)</label>
+          <textarea id="Instances">[
+  {"instanceId":"site2-a","addr":"/site2-a"},
+  {"instanceId":"site2-b","addr":"/site2-b"}
+]</textarea>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button class="btn primary" id="btnRegister">Register</button>
+      </div>
+
+      <div id="err" class="err"></div>
+
+      <div class="netlog-title">Network Log</div>
+      <div id="networkLog"></div>
+    </div>
+  </div>
+
+  <script src="./assets/center-api.js"></script>
+  <script src="./assets/ui.js?v=20260206_2"></script>
+</body>
+</html>

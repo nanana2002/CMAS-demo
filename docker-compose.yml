@@ -1,0 +1,61 @@
+services:
+  center:
+    build: ./center
+    container_name: center
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - STORE_PATH=/data/store.json
+    volumes:
+      - center_data:/data
+    networks:
+      - cmas-network
+
+  platform:
+    build: ./platform
+    container_name: platform
+    ports:
+      - "8081:80"
+    environment:
+      # 浏览器访问 platform 页面时，会用这个默认值请求 center
+      - CENTER_BASE_URL=http://localhost:8080
+    networks:
+      - cmas-network
+
+  client:
+    build: ./client
+    container_name: client
+    ports:
+      - "8082:80"
+    environment:
+      - CENTER_BASE_URL=http://localhost:8080
+    networks:
+      - cmas-network
+    restart: always
+
+  # Ollama 模型服务（核心）
+  ollama-model:
+    image: ollama/ollama:latest
+    container_name: ollama-model
+    ports:
+      - "11434:11434"
+    volumes:
+      - /data/ollama-model:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_MODEL=qwen3-vl:2b
+      # 新增：允许所有跨域请求（解决403核心）
+      - OLLAMA_ORIGINS=*
+      - OLLAMA_ALLOW_CORS=1
+    restart: always
+    networks:
+      - cmas-network
+
+volumes:
+  center_data: {}
+
+# 统一网络，确保所有容器互通
+networks:
+  cmas-network:
+    driver: bridge

@@ -1,0 +1,31 @@
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+
+    # 核心修改：通用转发规则（匹配所有路径，转发到Ollama）
+    location / {
+        proxy_pass http://ollama-model:11434/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # 调大超时时间（解决504）
+        proxy_connect_timeout 10s;
+        proxy_send_timeout 10s;
+        proxy_read_timeout 10s;
+        
+        # 禁用缓冲，避免大响应缓存
+        proxy_buffering off;
+    }
+
+    # 健康检查接口（兼容原有/ping路径）
+    location = /ping {
+        proxy_pass http://ollama-model:11434/api/tags;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_connect_timeout 10s;
+        proxy_read_timeout 10s;
+    }
+}
